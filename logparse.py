@@ -171,7 +171,7 @@ def main():
                 times.append(r)
             else:
                 print("Results contain negative values, try using '-a' flag instead.")
-        res = sum(times)/len(times)
+        res = (f"Latency List: {times}", f"Average: {sum(times)/len(times)}")
     elif re.match(r"^-a$", str(flag)):
         fn = sys.argv[2]
         split_str = sys.argv[3]
