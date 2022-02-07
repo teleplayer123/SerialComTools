@@ -7,12 +7,12 @@ import logging
 import re
 import serial
 import sys
-from time import sleep
+from time import sleep, time
 import threading
 
 TODAY = datetime.datetime.now().strftime("%m-%d-%Y")
 
-logging.basicConfig(filename=f"serial_com_{TODAY}.log", filemode="a", 
+logging.basicConfig(filename=f"serial_com_{TODAY}_{int(time())}.log", filemode="a", 
             format="%(asctime)s - %(module)s - %(funcName)s - %(levelname)s - %(message)s",
             level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -128,9 +128,10 @@ class SerialPortException(Exception):
     pass
 
 
-class SerialPoll:
+class SerialPoll(threading.Thread):
 
     def __init__(self, ser, interact=True, timeout=None, impl_rtscts=False, nl=None, verbose=False):
+        super(SerialPoll, self).__init__()
         if not isinstance(ser, SerialPort):
             raise SerialPortException("First parameter must be instance of SerialPort class.")
         self.ser = ser
@@ -367,7 +368,7 @@ def main():
     poll = SerialPoll(ser, timeout=0.5, impl_rtscts=rtscts, nl=nl_char)
 
     try:
-        poll.run()
+        poll.start()
     except KeyboardInterrupt:
         poll.stop()
 
