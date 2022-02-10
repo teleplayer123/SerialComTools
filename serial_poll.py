@@ -136,7 +136,7 @@ class SerialReader(threading.Thread):
                 for data in self.ser.read_from_buff():
                     char = chr(data)
                     s += char
-                    if char == "\n" or (len(s) > 64 and char == " ") :
+                    if char == "\n" or (len(s) > 64 and char == " "):
                         self.callback("".join([s[i] for i in range(len(s)-1, 0, -1)]))
                         logger.info("".join([s[i] for i in range(len(s)-1, 0, -1)]))
                         s = ""
