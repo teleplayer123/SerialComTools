@@ -325,6 +325,7 @@ def main():
     rtscts = False
     dsrdtr = False
     nl_char = None
+    verbose = False
 
     if len(sys.argv) > 1:
         if len(sys.argv) == 2:
@@ -365,7 +366,7 @@ def main():
         ttyx = "/dev/{}".format(ttyx)
         
     ser = SerialPort(ttyx, baudrate, dsrdtr=dsrdtr)
-    poll = SerialPoll(ser, timeout=0.5, impl_rtscts=rtscts, nl=nl_char)
+    poll = SerialPoll(ser, timeout=0.5, impl_rtscts=rtscts, nl=nl_char, verbose=verbose)
 
     try:
         poll.start()
