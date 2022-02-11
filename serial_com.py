@@ -308,7 +308,7 @@ class SerialPoll(threading.Thread):
 def main():
     USAGE = \
         """
-        Usage: serial_poller.py <serial_name> [baudrate] [flow_control] [endline_char] [dsr_dtr] [verbose]
+        Usage: serial_poller.py <serial_name> [baudrate] [rtscts] [endline_char] [dsrdtr] [verbose]
 
         Note:
             Arguments parsed in order shown above. If a parameter at position 
