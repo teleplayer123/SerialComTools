@@ -12,7 +12,7 @@ import threading
 
 TODAY = datetime.datetime.now().strftime("%m-%d-%Y")
 
-logging.basicConfig(filename=f"serial_com_{TODAY}_{int(time())}.log", filemode="a", 
+logging.basicConfig(filename=f"serial_com_{TODAY}_{int(time())}.log", filemode="a", encoding="latin-1", 
             format="%(asctime)s - %(module)s - %(funcName)s - %(levelname)s - %(message)s",
             level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -85,14 +85,14 @@ class SerialPort:
         if size is None:
             msg = self.port.readlines()
             if decode == True:
-                res = [str(m.decode()) for m in msg]
+                res = [str(m.decode("latin-1")) for m in msg]
                 res = [m.strip("\r\n") for m in res if m.find("\r\n")]
             else:
                 res = bytearray([b for b in msg])
         elif type(size) == int:
             msg = self.port.read(size)
             if decode == True:
-                res = msg.decode()
+                res = msg.decode("latin-1")
             else:
                 res = msg
         else:
@@ -103,7 +103,7 @@ class SerialPort:
         if not self.port.is_open:
             self.port.open()
         while True:
-            data = self.port.readline().decode()
+            data = self.port.readline().decode("latin-1")
             if end is not None:
                 if re.match(end, data):
                     break
@@ -114,7 +114,7 @@ class SerialPort:
         
     def read_line(self):
         for line in self.port.readlines():
-            yield line.decode()
+            yield line.decode("latin-1")
 
     def close_port(self):
         if self.port.is_open:
