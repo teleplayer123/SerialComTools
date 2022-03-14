@@ -10,13 +10,18 @@ import sys
 from time import sleep, time
 import threading
 
+
 TODAY = datetime.datetime.now().strftime("%m-%d-%Y")
 
-logging.basicConfig(filename=f"serial_com_{TODAY}_{int(time())}.log", filemode="a", encoding="latin-1", 
-            format="%(asctime)s - %(module)s - %(funcName)s - %(levelname)s - %(message)s",
-            level=logging.DEBUG)
+try:
+    logging.basicConfig(filename=f"serial_com_{TODAY}_{int(time())}.log", filemode="a", encoding="latin-1", 
+                    format="%(asctime)s - %(module)s - %(funcName)s - %(levelname)s - %(message)s",
+                    level=logging.DEBUG)
+except ValueError:
+    logging.basicConfig(filename=f"serial_com_{TODAY}_{int(time())}.log", filemode="a", 
+                    format="%(asctime)s - %(module)s - %(funcName)s - %(levelname)s - %(message)s",
+                    level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
 
 
 class SerialPort:
@@ -32,7 +37,7 @@ class SerialPort:
     def flush_port(self):
         self.port.flush()
 
-    def write_cust_crlf(self, cmd, cr=False, lf=True):
+    def write_cust_crlf(self, cmd, cr=False, lf=True): #TODO add option for double new lines
         if cr == False:
             if lf == False:
                 self.port.write(str(cmd).encode())
@@ -149,7 +154,7 @@ class SerialPoll(threading.Thread):
         self.read_has_lock = True
 
     def process_nl_opts(self, nl):
-        if nl.lower() not in {"cr", "lf", "no_crlf"}:
+        if nl.lower() not in {"cr", "lf", "no_crlf", "nl"}:
             raise ValueError("If nl is not None, it must be a string with value of either [cr|nl|no_crlf]")
         else:
             cr, lf = False, False
@@ -163,6 +168,9 @@ class SerialPoll(threading.Thread):
             elif nl.lower() == "crlf":
                 cr = True
                 lf = True
+            elif nl.lower() == "nl":
+                cr = "nl"
+                lf = "nl"
         return cr, lf
 
     def run(self):
@@ -308,7 +316,7 @@ class SerialPoll(threading.Thread):
 def main():
     USAGE = \
         """
-        Usage: serial_poller.py <serial_name> [baudrate] [rtscts] [endline_char] [dsrdtr] [verbose]
+        Usage: serial_poller.py <serial_name> [baudrate] [rtscts] [endline_char] [dsrdtr] [verbose] 
 
         Note:
             Arguments parsed in order shown above. If a parameter at position 
@@ -316,7 +324,7 @@ def main():
         @param Required str serial_name:    name given by kernel to access over serial port.
         @param Optional int baudrate:       baudrate to use when opening serial port.
         @param Optional bool rtscts:        must be either [0|1], where 0 is False and 1 is True.
-        @param Optional str endline_char:   endline char to send after write; must be one of [cr|lf|no_crlf|crlf]. 
+        @param Optional str endline_char:   endline char to send after write; must be one of [cr|lf|no_crlf|crlf|nl]. 
         @param Optional bool dsrdtr:        must be either [0|1], where 0 is False and 1 is True.
         @param Optional bool verbose:       must be either [0|1], where 0 is False and 1 is True.
         """
@@ -325,7 +333,6 @@ def main():
     rtscts = False
     dsrdtr = False
     nl_char = None
-    verbose = False
 
     if len(sys.argv) > 1:
         if len(sys.argv) == 2:
@@ -366,7 +373,7 @@ def main():
         ttyx = "/dev/{}".format(ttyx)
         
     ser = SerialPort(ttyx, baudrate, dsrdtr=dsrdtr)
-    poll = SerialPoll(ser, timeout=0.5, impl_rtscts=rtscts, nl=nl_char, verbose=verbose)
+    poll = SerialPoll(ser, timeout=0.5, impl_rtscts=rtscts, nl=nl_char)
 
     try:
         poll.start()
