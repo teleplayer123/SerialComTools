@@ -113,9 +113,7 @@ class HM10:
         """get value of AT query"""
         return self._get_att(cmd)
         
-
-#hm10_mac = 0x64694E8C9F02
-
-s = SerialPort("/dev/ttyACM0", 9600)
-s.write_no_crlf("AT")
-s.write_no_crlf("AT+COMI?")
+if __name__ == "__main__":
+    s = SerialPort("/dev/ttyACM0", 9600)
+    s.write_no_crlf("AT")
+    s.write_no_crlf("AT+COMI?")

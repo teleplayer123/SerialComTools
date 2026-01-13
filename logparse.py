@@ -1,7 +1,3 @@
-#!/usr/bin/python3
-
-#written by Cole Sashkin
-
 from collections import defaultdict
 import datetime
 import os

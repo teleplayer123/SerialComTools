@@ -1,11 +1,8 @@
-#!/usr/bin/python3
-
 import logging
 import os
-import re
 import serial
 import time
-from typing import Optional, TypeVar
+from typing import TypeVar
 
 FILENAME = "BLE_ESP_AT.log"
 DIRNAME = os.getcwd()
@@ -371,16 +368,17 @@ def mul_625(n):
     for i in range(n):
         m = i * 0.625
 
-c = Central_BLE("/dev/ttyUSB0", verbose=True)
-c.ble_init()
-c.set_ble_scan_param(0,0,0,320,48)
-c.get_ble_scan_params()
-c.start_ble_scan()
+if __name__ == "__main__":
+    c = Central_BLE("/dev/ttyUSB0", verbose=True)
+    c.ble_init()
+    c.set_ble_scan_param(0,0,0,320,48)
+    c.get_ble_scan_params()
+    c.start_ble_scan()
 
-start = time.perf_counter()
-while True:
-    end = time.perf_counter() - start
-    if end >= 10:
-        break
-disc = c.stop_ble_scan()
-print(disc)
+    start = time.perf_counter()
+    while True:
+        end = time.perf_counter() - start
+        if end >= 10:
+            break
+    disc = c.stop_ble_scan()
+    print(disc)
